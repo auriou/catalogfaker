@@ -36,6 +36,7 @@
     "node": ">=6.10"
   },
   "dependencies": {
-    "@faker-js/faker": "^8.1.0"
+    "@faker-js/faker": "^8.1.0",
+    "fs": "^0.0.1-security"
   }
 }

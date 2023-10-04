@@ -1,10 +1,11 @@
 import { fr, Faker } from '@faker-js/faker';
+import * as fs from 'fs';
 
 export const fake = new Faker({
   locale: [fr],
 });
 
-const productCount = 5;
+const productCount = 1000;
 
 export class Generator {
   getProduct(): any {
@@ -28,63 +29,50 @@ export class Generator {
       productBrand:
       {
         brandId: fake.commerce.productMaterial,
-        mediaUrl: "/nike.jpg",
+        mediaUrl: fake.image.url(),
         mediaType: fake.number.int({ min: 1, max: 5 })
       },
       categorization:
       {
         categoryId: 2490928,
-        categoryName: "Garçon (2-14 ans)",
-        gammeId: 2490929,
-        gammeName: "T-shirts & chemises",
-        nmUniverId: 7,
-        nmFamilyId: 46,
-        nmSubFamilyId: 104,
-        nmUniversLabel: "PRÊT-À-PORTER",
-        nmFamilyLabel: "Tops, t-shirts et chemises",
-        nmSubFamilyLabel: "T-shirts"
+        categoryName: fake.commerce.department(),
+        gammeId: fake.number.int({ min: 156312, max: 256312 }),
+        gammeName: `${fake.commerce.department()} & ${fake.commerce.department()}`,
+        nmUniverId: fake.number.int({ min: 1, max: 15 }),
+        nmFamilyId: fake.number.int({ min: 1, max: 50 }),
+        nmSubFamilyId: fake.number.int({ min: 1, max: 200 }),
+        nmUniversLabel: fake.commerce.product(),
+        nmFamilyLabel: `${fake.commerce.productAdjective()} et ${fake.commerce.productAdjective()}`,
+        nmSubFamilyLabel: fake.commerce.productMaterial()
       },
       productColor:
       {
         colorId: 39,
-        colorName: "black"
+        colorName: fake.helpers.arrayElement(['black', 'red', 'yellow'])
       },
 
       productDescription: fake.commerce.productDescription(),
-      productEAN: ["4237935465826", "4237935465827", "4237935465828"],
+      productEAN: [
+        fake.helpers.multiple(() => 
+            fake.number.int({ min: 1237935465826, max: 9237935465826 }), 
+            { count: fake.number.int({ min: 1, max: 5 }) }
+        )
+      ],
       productMedia:
         [
-          {
-            mediaType: 99,
-            mediaUrl: "https://media-prod-eu-1.mirakl.net/SOURCE/ab88dcf3b7a7413687edbb1d32c8eb5f"
-          },
-          {
-            mediaType: 50,
-            mediaUrl: "https://media-prod-eu-1.mirakl.net/SOURCE/ab88dcf3b7a7413687edbb1d32c8eb5f"
-          },
-          {
-            mediaType: 99,
-            mediaUrl: "https://media-prod-eu-1.mirakl.net/SOURCE/ab88dcf3b7a7413687edbb1d32c8eb5f"
-          },
-          {
-            mediaType: 99,
-            mediaUrl: "https://media-prod-eu-1.mirakl.net/SOURCE/ab88dcf3b7a7413687edbb1d32c8eb5f"
-          },
-          {
-            mediaType: 70,
-            mediaUrl: "https://media-prod-eu-1.mirakl.net/SOURCE/ab88dcf3b7a7413687edbb1d32c8eb5f"
-          },
-          {
-            mediaType: 82, //aide taille
-            modelDetail: "<!-PDF->118029guide0342300-Obaibi-Okaidi_-_PAP.pdf"
-          }
+          fake.helpers.multiple(() => {
+            return {
+              mediaType: fake.number.int({ min: 20, max: 99 }),
+              mediaUrl: fake.internet.url()
+            }
+          }, { count: fake.number.int({ min: 1, max: 5 }) })
         ],
-      productRecommendedRetailPrice: 99.00,
-      productTitle: "MYC Paris - Calendrier  24 bijoux - Miss Noel - Finitions argentée et rosée - Argenté et Cristal ou blanc",
-      productVariantGroupCode: "4cef1021-f2a3-46c2-8402-544464f4a9be",
-      validation: "true",
+      productRecommendedRetailPrice: fake.commerce.price(),
+      productTitle: fake.commerce.productDescription(),
+      productVariantGroupCode: fake.string.uuid(),
+      validation: true,
       productCarton: 3541,
-      productPriceJustification: "Prix public conseillé",
+      productPriceJustification: fake.lorem.sentence({ min: 1, max: 3 }),
       sizeHelpUrl: "iframe/aideTaille.aspx?ind=3",
       warranty:
       {
@@ -139,4 +127,7 @@ for (let index = 0; index < productCount; index++) {
   collection.push(generator.getProduct());
 }
 var msg = JSON.stringify(collection);
+fs.writeFile("test.json", msg, (err) => {
+  if (err) throw err;
+ });
 console.log(msg);
